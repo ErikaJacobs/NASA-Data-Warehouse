@@ -3,109 +3,90 @@
 
 
 #%%
-
-# Import Packages - Set Dates
-import datetime
-from dateutil.relativedelta import relativedelta
-
-ParamsDict=dict()
-now = str(datetime.datetime.now().date())
-then = str(datetime.datetime.now().date() - relativedelta(years=5))
-
 api_key = api_key
-# application/json;charset=UTF-8
-params = {
-      'api_key':api_key,
-      'startDate':then,
-      'endDate':now
-      }
-ParamsDict['CME']=params
-ParamsDict['CMEAnalysis']=params
-ParamsDict['HSS']=params
-ParamsDict['WSAEnlilSimulations']=params
-ParamsDict['notifications']=params
-
-# text/plain; charset=UTF-8
-params = {
-      'api_key':api_key,
-      'startDate':then,
-      'endDate':now,
-      'feedtype':'json'
-      }
-
-ParamsDict['GST']=params
-ParamsDict['IPS']=params
-ParamsDict['SEP']=params
-ParamsDict['MPC']=params
-ParamsDict['RBE']=params
-
-# text/html;charset=ISO-8859-1
-params = {
-      'api_key':api_key,
-      'startDate':then,
-      'endDate':now,
-      'feedtype':'json'
-      }
-
-ParamsDict['FLR']=params
+def params_dict():
+    
+    # Import Packages - Set Dates
+    import datetime
+    from dateutil.relativedelta import relativedelta
+    
+    ParamsDict=dict()
+    now = str(datetime.datetime.now().date())
+    then = str(datetime.datetime.now().date() - relativedelta(years=5))
+    
+    # application/json;charset=UTF-8
+    paramsjson = {
+          'api_key':api_key,
+          'startDate':then,
+          'endDate':now
+          }
+    
+    jsonlist = ['CME', 'CMEAnalysis', 'HSS', 'WSAEnlilSimulations', 'notifications']
+    
+    # text/plain; charset=UTF-8
+    paramstext = {
+          'api_key':api_key,
+          'startDate':then,
+          'endDate':now,
+          'feedtype':'json'
+          }
+    
+    # Append to Dict
+    
+    textlist = ['GST', 'IPS', 'SEP', 'MPC', 'RBE', 'FLR']
+    jsonlist = ['CME', 'CMEAnalysis', 'HSS', 'WSAEnlilSimulations', 'notifications']
+    
+    for item in textlist:
+        ParamsDict[item]=paramstext
+    
+    for item in jsonlist:
+        ParamsDict[item]=paramsjson
+    
+    return ParamsDict
 
 #%%
 
 #DONKI REQUESTS
-
-import requests
-
-responseDict = {}
-
-api_list = ['CME','CMEAnalysis','HSS','WSAEnlilSimulations', 
-            'notifications', 'GST', 'IPS', 'SEP', 'MPC', 'RBE','FLR']
-
-def donki_json(API):
-  url = f"https://api.nasa.gov/DONKI/{API}"
-  params = ParamsDict[API]
-  r = requests.get(url,params=params)
-  r.encoding = 'utf-8'
-  #print(r.status_code)
-  #print(r.headers.get('Content-Type'))
-  #print(r.encoding)
-  #print(limit_remaining)
-  
-  try:
-      response = r.json()
-
-  except:
-      print(f"{API} was not successfully requested.")
-      response = 'N/A'
-  
-  responseDict[API] = response
-
-for API in api_list:
-    donki_json(API)
+    
+def get_api_data(ParamsDict):
+    import requests
+    
+    responseDict = {}
+    
+    api_list = ['CME','CMEAnalysis','HSS','WSAEnlilSimulations', 
+                'notifications', 'GST', 'IPS', 'SEP', 'MPC', 'RBE','FLR']
+    
+    def donki_json(API, ParamsDict):
+      url = f"https://api.nasa.gov/DONKI/{API}"
+      params = ParamsDict[API]
+      r = requests.get(url,params=params)
+      r.encoding = 'utf-8'
+      #print(r.status_code)
+      #print(r.headers.get('Content-Type'))
+      #print(r.encoding)
+      #print(limit_remaining)
+      
+      try:
+          response = r.json()
+    
+      except:
+          print(f"{API} was not successfully requested.")
+          response = 'N/A'
+      
+      responseDict[API] = response
+    
+    for API in api_list:
+        donki_json(API, ParamsDict)
+    
+    return responseDict
 
 #%%
 
+ParamsDict = params_dict()
+responseDict = get_api_data(ParamsDict)
 
 
-#DONKI PLAIN TEXT REQUESTS
 
-#def donki_gst():
-#  url = "https://api.nasa.gov/DONKI/GST/"
-#  params = {
-#      'api_key':api_key,
-#      'startDate':'2015-05-28',
-#      'endDate':'2020-05-28',
-#      'feedtype':'json'
-#      }
-#  r = requests.get(url,
-#                   params=params)
-#  #print(r.status_code)
-#  #print(r.headers.get('Content-Type'))
-#  #print(r.encoding)
-  
-#  response = r.json()
-#  pp.pprint(response[2])
-  
-#donki_gst()
 
 #%% Insight Weather
 
