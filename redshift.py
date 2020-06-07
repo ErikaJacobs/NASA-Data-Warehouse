@@ -4,7 +4,7 @@
 
 #%%
 api_key = api_key
-def params_dict():
+def params_dict(api_key):
     
     # Import Packages - Set Dates
     import datetime
@@ -82,10 +82,129 @@ def get_api_data(ParamsDict):
 
 #%%
 
-ParamsDict = params_dict()
+# CME df - Dynamodb
+    
+def CME(responseDict):
+    
+    # Set-Up
+    api_list = responseDict['CME']
+    
+    activityID = []
+    catalog = []
+    startTime = []
+    sourceLocation = []
+    activeRegionNum = []
+    note = []
+    instruments = []
+    linkedEvents = []
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:
+        activityID.append(api_list[i]['activityID'])
+        catalog.append(api_list[i]['catalog'])
+        startTime.append(api_list[i]['startTime'])
+        sourceLocation.append(api_list[i]['sourceLocation'])
+        activeRegionNum.append(api_list[i]['activeRegionNum'])
+        note.append(api_list[i]['note'])
+        
+        # Instruments
+        if len(api_list[i]['instruments']) ==1:
+            instruments.append(api_list[i]['instruments'][0]['displayName'])
+        elif len(api_list[i]['instruments']) ==0:
+            instruments.append('N/A')
+        else:
+            # Add Loop to Concatenate Later
+            instruments.append('Multiple')
+        
+        # linkedEvents'
+        if api_list[i]['linkedEvents'] == 'None':
+            linkedEvents.append('N/A')
+        elif type(api_list[i]['linkedEvents']) is list:
+            # Add Loop to Concatenate Later
+            linkedEvents.append('Multiple')
+        else:
+            linkedEvents.append(api_list[i]['linkedEvents'])
+
+#%%
+    
+#CME Analysis - RDS
+
+def CMEAnalysis(responseDict):
+    print(responseDict['CMEAnalysis'][0])
+    
+    
+
+
+
+
+
+#%%
+    
+# HSS df - DynamoDB
+
+def HSS(responseDict):
+    print(responseDict['HSS'][0])
+    
+    
+    
+# WSA+EnlilSimulation - RDS
+
+def WSAEnlilSimulations(responseDict):
+    print(responseDict['WSAEnlilSimulations'][0])
+    
+    
+# Notifications - RDS
+
+def Notifications(responseDict):
+    print(responseDict['notifications'][0])
+    
+    
+# GST df - DynamoDB
+
+def GST(responseDict):
+    print(responseDict['GST'][0])
+    
+    
+    
+    
+# IPS df - DynamoDB
+
+def IPS(responseDict):
+    print(responseDict['IPS'][0])
+    
+       
+    
+# SEP df - DynamoDB
+
+def SEP(responseDict):
+    print(responseDict['SEP'][0])
+    
+    
+    
+# MPC df - DynamoDB
+
+def MPC(responseDict):
+    print(responseDict['MPC'][0])
+    
+    
+    
+# RBE df
+
+def RBE(responseDict):
+    print(responseDict['RBE'][0])
+    
+    
+    
+# FLR df
+
+#%%
+
+## Procedure
+
+ParamsDict = params_dict(api_key)
 responseDict = get_api_data(ParamsDict)
-
-
+CMElist = CME(responseDict)
 
 
 #%% Insight Weather
