@@ -1,6 +1,4 @@
 # NASA Redshift - Data Warehouse Project
-# Inputs
-
 
 #%%
 api_key = api_key
@@ -86,9 +84,13 @@ def get_api_data(ParamsDict):
     
 def CME(responseDict):
     
-    # Set-Up
-    api_list = responseDict['CME']
+    import pandas as pd
     
+    # Set-Up
+    name = 'CME'
+    api_list = responseDict[f'{name}']
+    
+    # Create Lists
     activityID = []
     catalog = []
     startTime = []
@@ -97,6 +99,8 @@ def CME(responseDict):
     note = []
     instruments = []
     linkedEvents = []
+    
+    # Extract Data from Dictionary
     
     api_range = list(range(len(api_list)))
     
@@ -125,19 +129,82 @@ def CME(responseDict):
             linkedEvents.append('Multiple')
         else:
             linkedEvents.append(api_list[i]['linkedEvents'])
-
+    
+    # Create Dataframe
+        
+    df = pd.DataFrame({
+    'activityID': activityID,   
+    'catalog': catalog,
+    'startTime': startTime,
+    'sourceLocation': sourceLocation,
+    'activeRegionNum': activeRegionNum,
+    'note': note,
+    'instruments': instruments,
+    'linkedEvents': linkedEvents
+    })
+    
+    # Export to S3
+    s3_export(df, name)
+            
 #%%
     
 #CME Analysis - RDS
 
 def CMEAnalysis(responseDict):
-    print(responseDict['CMEAnalysis'][0])
     
+    import pandas as pd
     
+    # Set-Up
+    name = 'CMEAnalysis'
+    api_list = responseDict[f'{name}']
+    
+    # Create Lists
+    time21_5 = []
+    latitude = []
+    longitude = []
+    halfAngle = []
+    CME_type = []
+    isMostAccurate = []
+    associatedCMEID = []
+    note = []
+    catalog = []
+    link = []
+    
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:
+        time21_5.append(api_list[i]['time21_5'])
+        latitude.append(api_list[i]['latitude'])
+        longitude.append(api_list[i]['longitude'])
+        halfAngle.append(api_list[i]['halfAngle'])
+        CME_type.append(api_list[i]['type'])
+        isMostAccurate.append(api_list[i]['isMostAccurate'])
+        associatedCMEID.append(api_list[i]['associatedCMEID'])
+        note.append(api_list[i]['note'])
+        catalog.append(api_list[i]['catalog'])
+        link.append(api_list[i]['link'])
+    
+    # Create Dataframe
+        
+    df = pd.DataFrame({
+    'time21_5': time21_5,   
+    'latitude': latitude,
+    'longitude': longitude,
+    'halfAngle': halfAngle,
+    'CME_type': CME_type,
+    'isMostAccurate': isMostAccurate,
+    'associatedCMEID': associatedCMEID,
+    'note': note,
+    'catalog': catalog,
+    'link': link
+    })
 
+    # Export to S3
+    s3_export(df, name)
 
-
-
+CMEAnalysis(responseDict)
 
 #%%
     
@@ -199,12 +266,32 @@ def RBE(responseDict):
 # FLR df
 
 #%%
+    
+## Boto3
 
-## Procedure
+def s3_export(df, name):
+
+    import boto3
+    from io import StringIO
+
+    path = f'NASA/{name}.csv'
+        
+    s3 = boto3.resource('s3')
+    #bucket = s3.Bucket('erikatestbucket')
+    csv_buffer = StringIO()
+    df.to_csv(csv_buffer, index = False)
+    s3.Object('erikatestbucket', path).put(Body=csv_buffer.getvalue())
+    
+#%%
+    
+# Inputs
+
+
+# Procedure
 
 ParamsDict = params_dict(api_key)
 responseDict = get_api_data(ParamsDict)
-CMElist = CME(responseDict)
+CME(responseDict)
 
 
 #%% Insight Weather
