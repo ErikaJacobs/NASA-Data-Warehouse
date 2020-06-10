@@ -442,26 +442,254 @@ IPS(responseDict)
 # SEP df - DynamoDB
 
 def SEP(responseDict):
-    print(responseDict['SEP'][0])
     
+    import pandas as pd
     
+    # Set-Up
+    name = 'SEP'
+    api_list = responseDict[f'{name}']
     
+    # Create Lists
+    sepID = []
+    eventTime = []
+    instruments = []
+    linkedEvents = []
+    link = []
+    
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:   
+        sepID.append(api_list[i]['sepID'])    
+        eventTime.append(api_list[i]['eventTime'])             
+        link.append(api_list[i]['link']) 
+
+        # Instruments
+        if len(api_list[i]['instruments']) ==1:
+            instruments.append(api_list[i]['instruments'][0]['displayName'])
+        elif len(api_list[i]['instruments']) ==0:
+            instruments.append('N/A')
+        else:
+            # Add Loop to Concatenate Later
+            instruments.append('Multiple')
+        
+        # linkedEvents'
+        if api_list[i]['linkedEvents'] == 'None':
+            linkedEvents.append('N/A')
+        elif type(api_list[i]['linkedEvents']) is list:
+            # Add Loop to Concatenate Later
+            linkedEvents.append('Multiple')
+        else:
+            linkedEvents.append(api_list[i]['linkedEvents'])
+
+    # Create Dataframe
+    
+    df = pd.DataFrame({
+    'sepID': sepID,
+    'eventTime': eventTime,
+    'instruments': instruments,
+    'linkedEvents': linkedEvents,
+    'link': link,
+    })
+    
+    # Export to S3
+    s3_export(df, name)  
+
+SEP(responseDict)
+#%%
 # MPC df - DynamoDB
 
 def MPC(responseDict):
-    print(responseDict['MPC'][0])
     
+    import pandas as pd
     
+    # Set-Up
+    name = 'MPC'
+    api_list = responseDict[f'{name}']
+    
+    # Create Lists    
+    mpcID = []
+    eventTime = []
+    instruments = []
+    linkedEvents = []
+    link = []
+
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:   
+        mpcID.append(api_list[i]['mpcID'])    
+        eventTime.append(api_list[i]['eventTime'])             
+        link.append(api_list[i]['link']) 
+
+        # Instruments
+        if len(api_list[i]['instruments']) ==1:
+            instruments.append(api_list[i]['instruments'][0]['displayName'])
+        elif len(api_list[i]['instruments']) ==0:
+            instruments.append('N/A')
+        else:
+            # Add Loop to Concatenate Later
+            instruments.append('Multiple')
+        
+        # linkedEvents'
+        if api_list[i]['linkedEvents'] == 'None':
+            linkedEvents.append('N/A')
+        elif type(api_list[i]['linkedEvents']) is list:
+            # Add Loop to Concatenate Later
+            linkedEvents.append('Multiple')
+        else:
+            linkedEvents.append(api_list[i]['linkedEvents'])
+
+    # Create Dataframe
+    
+    df = pd.DataFrame({
+    'mpcID': mpcID,
+    'eventTime': eventTime,
+    'instruments': instruments,
+    'linkedEvents': linkedEvents,
+    'link': link,
+    })   
+    
+    # Export to S3
+    s3_export(df, name)  
+    
+MPC(responseDict)   
+#%%
     
 # RBE df
 
 def RBE(responseDict):
-    print(responseDict['RBE'][0])
     
+    import pandas as pd
     
+    # Set-Up
+    name = 'RBE'
+    api_list = responseDict[f'{name}']
+    
+    # Create Lists    
+    rbeID = []
+    eventTime = []
+    instruments = []
+    linkedEvents = []
+    link = []
+
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:   
+        rbeID.append(api_list[i]['rbeID'])    
+        eventTime.append(api_list[i]['eventTime'])             
+        link.append(api_list[i]['link']) 
+
+        # Instruments
+        if len(api_list[i]['instruments']) ==1:
+            instruments.append(api_list[i]['instruments'][0]['displayName'])
+        elif len(api_list[i]['instruments']) ==0:
+            instruments.append('N/A')
+        else:
+            # Add Loop to Concatenate Later
+            instruments.append('Multiple')
+        
+        # linkedEvents'
+        if api_list[i]['linkedEvents'] == 'None':
+            linkedEvents.append('N/A')
+        elif type(api_list[i]['linkedEvents']) is list:
+            # Add Loop to Concatenate Later
+            linkedEvents.append('Multiple')
+        else:
+            linkedEvents.append(api_list[i]['linkedEvents'])
+
+    # Create Dataframe
+    
+    df = pd.DataFrame({
+    'rbeID': rbeID,
+    'eventTime': eventTime,
+    'instruments': instruments,
+    'linkedEvents': linkedEvents,
+    'link': link,
+    })   
+    
+    # Export to S3
+    s3_export(df, name)  
+    
+   
+RBE(responseDict)
+#%%
     
 # FLR df
+    
+def FLR(responseDict):
+ 
+    import pandas as pd
+    
+    # Set-Up
+    name = 'FLR'
+    api_list = responseDict[f'{name}']
+    
+    # Create Lists  
+    flrID = []
+    instruments = []
+    beginTime = []
+    peakTime = []
+    endTime = []
+    classType = []
+    sourceLocation = []
+    activeRegionNum = []
+    linkedEvents = []
+    link = []
 
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:   
+        flrID.append(api_list[i]['flrID'])    
+        beginTime.append(api_list[i]['beginTime'])          
+        peakTime.append(api_list[i]['peakTime'])   
+        endTime.append(api_list[i]['endTime'])    
+        classType.append(api_list[i]['classType'])    
+        sourceLocation.append(api_list[i]['sourceLocation'])    
+        activeRegionNum.append(api_list[i]['activeRegionNum'])    
+        link.append(api_list[i]['link']) 
+
+        # Instruments
+        if len(api_list[i]['instruments']) ==1:
+            instruments.append(api_list[i]['instruments'][0]['displayName'])
+        elif len(api_list[i]['instruments']) ==0:
+            instruments.append('N/A')
+        else:
+            # Add Loop to Concatenate Later
+            instruments.append('Multiple')
+        
+        # linkedEvents'
+        if api_list[i]['linkedEvents'] == 'None':
+            linkedEvents.append('N/A')
+        elif type(api_list[i]['linkedEvents']) is list:
+            # Add Loop to Concatenate Later
+            linkedEvents.append('Multiple')
+        else:
+            linkedEvents.append(api_list[i]['linkedEvents'])   
+
+    df = pd.DataFrame({
+        'flrID': flrID,
+        'instruments': instruments,
+        'beginTime': beginTime,
+        'peakTime': peakTime,
+        'endTime': endTime,
+        'classType': classType,
+        'sourceLocation': sourceLocation,
+        'activeRegionNum': activeRegionNum,
+        'linkedEvents': linkedEvents,
+        'link': link
+    })  
+    
+    # Export to S3
+    s3_export(df, name)   
+    
+FLR(responseDict)
 #%%
     
 ## Boto3
