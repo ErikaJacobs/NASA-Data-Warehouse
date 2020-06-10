@@ -19,8 +19,6 @@ def params_dict(api_key):
           'endDate':now
           }
     
-    jsonlist = ['CME', 'CMEAnalysis', 'HSS', 'WSAEnlilSimulations', 'notifications']
-    
     # text/plain; charset=UTF-8
     paramstext = {
           'api_key':api_key,
@@ -32,7 +30,7 @@ def params_dict(api_key):
     # Append to Dict
     
     textlist = ['GST', 'IPS', 'SEP', 'MPC', 'RBE', 'FLR']
-    jsonlist = ['CME', 'CMEAnalysis', 'HSS', 'WSAEnlilSimulations', 'notifications']
+    jsonlist = ['CME', 'CMEAnalysis', 'HSS', 'WSAEnlilSimulations']
     
     for item in textlist:
         ParamsDict[item]=paramstext
@@ -204,44 +202,243 @@ def CMEAnalysis(responseDict):
     # Export to S3
     s3_export(df, name)
 
-CMEAnalysis(responseDict)
-
 #%%
     
 # HSS df - DynamoDB
 
 def HSS(responseDict):
-    print(responseDict['HSS'][0])
     
+    import pandas as pd
     
+    # Set-Up
+    name = 'HSS'
+    api_list = responseDict[f'{name}']
+    
+    # Create Lists
+    hssID = []
+    eventTime = []
+    instruments = []
+    linkedEvents = []
+    link = []
+
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:
+        hssID.append(api_list[i]['hssID'])
+        eventTime.append(api_list[i]['eventTime'])
+        link.append(api_list[i]['link'])
+        
+        # Instruments
+        if len(api_list[i]['instruments']) ==1:
+            instruments.append(api_list[i]['instruments'][0]['displayName'])
+        elif len(api_list[i]['instruments']) ==0:
+            instruments.append('N/A')
+        else:
+            # Add Loop to Concatenate Later
+            instruments.append('Multiple')
+        
+        # linkedEvents'
+        if api_list[i]['linkedEvents'] == 'None':
+            linkedEvents.append('N/A')
+        elif type(api_list[i]['linkedEvents']) is list:
+            # Add Loop to Concatenate Later
+            linkedEvents.append('Multiple')
+        else:
+            linkedEvents.append(api_list[i]['linkedEvents'])
+
+    # Create Dataframe
+    
+    df = pd.DataFrame({
+    'hssID': hssID,   
+    'eventTime': eventTime,
+    'instruments': instruments,
+    'linkedEvents': linkedEvents,
+    'link': link
+    })
+   
+    # Export to S3
+    s3_export(df, name)
+
+#%%
     
 # WSA+EnlilSimulation - RDS
 
 def WSAEnlilSimulations(responseDict):
-    print(responseDict['WSAEnlilSimulations'][0])
+        
+    import pandas as pd
     
+    # Set-Up
+    name = 'WSAEnlilSimulations'
+    api_list = responseDict[f'{name}']
     
-# Notifications - RDS
+    # Create Lists
+    simulationID = []
+    modelCompletionTime = []
+    au = []
+    cmeInputs = []
+    estimatedShockArrivalTime = []
+    estimatedDuration = []
+    rmin_re = []
+    kp_18 = []
+    kp_90 = []
+    kp_135 = []
+    kp_180 = []
+    isEarthGB = []
+    impactList = []
+    link = []
+    
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:
+        simulationID.append(api_list[i]['simulationID'])
+        modelCompletionTime.append(api_list[i]['modelCompletionTime'])
+        au.append(api_list[i]['au'])
+        cmeInputs.append(api_list[i]['cmeInputs'])
+        estimatedShockArrivalTime.append(api_list[i]['estimatedShockArrivalTime'])
+        estimatedDuration.append(api_list[i]['estimatedDuration'])
+        rmin_re.append(api_list[i]['rmin_re'])
+        kp_18.append(api_list[i]['kp_18'])
+        kp_90.append(api_list[i]['kp_90'])
+        kp_135.append(api_list[i]['kp_135'])
+        kp_180.append(api_list[i]['kp_180'])
+        isEarthGB.append(api_list[i]['isEarthGB'])
+        impactList.append(api_list[i]['impactList'])
+        link.append(api_list[i]['link'])    
+    
+    # Create Dataframe
+    
+    df = pd.DataFrame({
+    'simulationID': simulationID,
+    'modelCompletionTime': modelCompletionTime,
+    'au': au,
+    'cmeInputs': cmeInputs,
+    'estimatedShockArrivalTime': estimatedShockArrivalTime,
+    'estimatedDuration': estimatedDuration,
+    'rmin_re': rmin_re,
+    'kp_18': kp_18,
+    'kp_90': kp_90,
+    'kp_135': kp_135,
+    'kp_180': kp_180,
+    'isEarthGB': isEarthGB,
+    'impactList': impactList,
+    'link': link
+    })
 
-def Notifications(responseDict):
-    print(responseDict['notifications'][0])
+    # Export to S3
+    s3_export(df, name)
     
-    
+#%%
 # GST df - DynamoDB
 
 def GST(responseDict):
-    print(responseDict['GST'][0])
     
+    import pandas as pd
     
+    # Set-Up
+    name = 'GST'
+    api_list = responseDict[f'{name}']
+    
+    # Create Lists
+    gstID = []
+    startTime = []
+    allKpIndex = []
+    linkedEvents = []
+    link = []
+    
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:   
+        gstID.append(api_list[i]['gstID'])   
+        startTime.append(api_list[i]['startTime'])   
+        allKpIndex.append(api_list[i]['allKpIndex'])           
+        link.append(api_list[i]['link'])   
+
+        # linkedEvents
+        if api_list[i]['linkedEvents'] == 'None':
+            linkedEvents.append('N/A')
+        elif type(api_list[i]['linkedEvents']) is list:
+            # Add Loop to Concatenate Later
+            linkedEvents.append('Multiple')
+        else:
+            linkedEvents.append(api_list[i]['linkedEvents'])
+    
+    # Create Dataframe
+    
+    df = pd.DataFrame({
+    'gstID': gstID,
+    'startTime': startTime,
+    'allKpIndex': allKpIndex,
+    'linkedEvents': linkedEvents,
+    'link': link
+    })    
+    
+    # Export to S3
+    s3_export(df, name)
+    
+#%%
     
     
 # IPS df - DynamoDB
 
 def IPS(responseDict):
-    print(responseDict['IPS'][0])
     
-       
+    import pandas as pd
     
+    # Set-Up
+    name = 'IPS'
+    api_list = responseDict[f'{name}']
+    
+    # Create Lists
+    catalog = []
+    activityID = []
+    location = []
+    eventTime = []
+    link = []
+    instruments = []
+    
+    # Extract Data from Dictionary
+    
+    api_range = list(range(len(api_list)))
+    
+    for i in api_range:   
+        catalog.append(api_list[i]['catalog'])   
+        activityID.append(api_list[i]['activityID'])   
+        location.append(api_list[i]['location'])     
+        eventTime.append(api_list[i]['eventTime'])             
+        link.append(api_list[i]['link']) 
+        
+        # Instruments
+        if len(api_list[i]['instruments']) ==1:
+            instruments.append(api_list[i]['instruments'][0]['displayName'])
+        elif len(api_list[i]['instruments']) ==0:
+            instruments.append('N/A')
+        else:
+            # Add Loop to Concatenate Later
+            instruments.append('Multiple')
+            
+    # Create Dataframe
+    
+    df = pd.DataFrame({
+    'catalog': catalog,
+    'activityID': activityID,
+    'location': location,
+    'eventTime': eventTime,
+    'link': link,
+    'instruments': instruments
+    })
+    
+    # Export to S3
+    s3_export(df, name)    
+
+IPS(responseDict)     
+    
+#%%
 # SEP df - DynamoDB
 
 def SEP(responseDict):
@@ -277,7 +474,6 @@ def s3_export(df, name):
     path = f'NASA/{name}.csv'
         
     s3 = boto3.resource('s3')
-    #bucket = s3.Bucket('erikatestbucket')
     csv_buffer = StringIO()
     df.to_csv(csv_buffer, index = False)
     s3.Object('erikatestbucket', path).put(Body=csv_buffer.getvalue())
@@ -291,7 +487,13 @@ def s3_export(df, name):
 
 ParamsDict = params_dict(api_key)
 responseDict = get_api_data(ParamsDict)
+
+# Sends to S3
 CME(responseDict)
+CMEAnalysis(responseDict)
+HSS(responseDict)
+WSAEnlilSimulations(responseDict)
+GST(responseDict)
 
 
 #%% Insight Weather
