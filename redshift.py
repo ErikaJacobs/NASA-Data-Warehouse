@@ -16,7 +16,7 @@ def config():
     # Create Dictionary of Configurations
     
     for option in config_list:
-        if option == 'numberofnodes':
+        if option == 'numberofnodes' or option == 'port':
             configs[f'{option}'] = int(Config.get('Redshift', option))
         else:
             configs[f'{option}'] = Config.get('Redshift', option)
@@ -51,16 +51,52 @@ def create_cluster(configs):
     # Determine if Cluster is Created
     
     if 'nasa-cluster' in cluster_ids:
-        print('Cluster Created')
+        print('Cluster Already Created')
     else:
+        print('Creating cluster...')
         redshift.create_cluster(
         DBName = configs['dbname'], 
         ClusterIdentifier = configs['clusteridentifier'],
         NodeType = configs['nodetype'],
         MasterUsername = configs['masterusername'],
         MasterUserPassword = configs['masteruserpassword'],
-        NumberOfNodes = configs['numberofnodes'])
-    
+        NumberOfNodes = configs['numberofnodes'],
+        IamRoles=[configs['role_arn']])
+#%%
+
+def iam(configs):
+
+# Create IAM role - append ARN to configs dict
+        import boto3
+        import json
+        
+        iam = boto3.client('iam')
+        
+        try:  
+            iam.create_role(
+                RoleName= configs['rolename'], 
+                AssumeRolePolicyDocument=json.dumps(
+                    {'Statement': [{'Action': 'sts:AssumeRole',
+                                    'Effect': 'Allow',
+                                    'Principal': {'Service': 'redshift.amazonaws.com'}}],
+                     'Version': '2012-10-17'})
+                )
+            
+            
+            iam.attach_role_policy(RoleName=configs['rolename'], 
+                                   PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+                                   )['ResponseMetadata']['HTTPStatusCode']
+            
+            role_arn = iam.get_role(RoleName=configs['rolename'])['Role']['Arn']
+            
+            configs['role_arn']=role_arn
+        
+        except:
+            role_arn = iam.get_role(RoleName=configs['rolename'])['Role']['Arn']
+            configs['role_arn']=role_arn       
+        
+        return configs
+        
 #%%
         
 # Collect Redshift Cluster Endpoint
@@ -83,6 +119,7 @@ def endpoint(configs):
         try:
             endpoint = 'N/A'
             response = dict(redshift.describe_clusters(ClusterIdentifier = configs['clusteridentifier']))
+            print(response)
         except:
             print('ERROR: Redshift cluster does not exist')
             break
@@ -98,36 +135,53 @@ def endpoint(configs):
             continue
         
         if response['Clusters'][0]['ClusterStatus'] == 'available':
+            
+            # Get and vpc Into Configs
             endpoint = (response['Clusters'][0]['Endpoint']['Address'])
             configs['endpoint'] = endpoint
+            vpcid = (response['Clusters'][0]['VpcId'])
+            configs['vpcid']=vpcid
             print(f'Redshift endpoint collected at {datetime.now()}')
+            
             break
             
         else:
             print(f'{response} Status Invalid')
-            sleep(30)
+            break
 
     return configs
             
+#%%
+    
+# Open Port
+
+def open_port(configs):
+    
+    import boto3
+    
+    try:
+        ec2 = boto3.resource('ec2')
+        
+        vpc = ec2.Vpc(id=configs['vpcid'])
+        sec_group = list(vpc.security_groups.all())[0]
+        sec_group.authorize_ingress(GroupName=sec_group.group_name,
+                                    CidrIp='0.0.0.0/0',
+                                    IpProtocol='TCP',
+                                    FromPort=configs['port'],
+                                    ToPort=configs['port']
+                                    )
+        
+        print('Port Opened')
+    except:
+        print('Port Already Opened')
+    return configs
+
 #%%
 
 # Connect To Redshift
 
 import psycopg2
 
-configs.keys()
-
-#%%
-
-conn_string="postgresql://{}:{}@{}:{}/{}".format(
-    configs['masterusername'],
-    configs['masteruserpassword'],
-    configs['endpoint'],
-    configs['port'],
-    configs['dbname'])
-
-conn = psycopg2.connect(conn_string)
-#%%
 try:
     conn = psycopg2.connect(
         dbname = configs['dbname'],
@@ -138,23 +192,33 @@ try:
 except:
     print('THIS DID NOT WORK')
 
-#print(AWS_SECRET_KEY)
 #%%
 
 # Procedure
 
 configs = config()
+configs = iam(configs)
 create_cluster(configs)
 configs = endpoint(configs)
+configs = open_port(configs)
 
 #%%
 # Delete Cluster
-def delete():
+def delete(configs):
+    import boto3
+    
+    iam = boto3.client('iam')
     redshift = redshift_boto()
 
-    redshift.delete_cluster(ClusterIdentifier='nasa-cluster', 
+    # Delete Cluster and IAM Role 
+    redshift.delete_cluster(ClusterIdentifier=configs['clusteridentifier'], 
                             SkipFinalClusterSnapshot = True)
+    
+    iam.detach_role_policy(
+        RoleName = configs['rolename'], 
+        PolicyArn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
+    iam.delete_role(RoleName=configs['rolename'])
 
-delete()
+delete(configs)
     
 #%%
