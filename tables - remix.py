@@ -159,6 +159,10 @@ def nasa_dfs(responseDict):
                 continue
         
         # Add Dictionary of Columns to df Dictionary
+            
+        # If Column == instruments cmeInputs or AllKpIndex Combine Dicts
+            
+        # Else
         df_Dicts[f'{api}'] = columnDict
 
         # Create Dataframe
