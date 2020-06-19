@@ -107,41 +107,85 @@ def nasa_dfs(responseDict):
         'startTime', 'time21_5', 'type']
 
         for column in columns:
-            column_list = []
+            column_list = []   
             
+            # If allKpIndex is a field
+            KpAvg_list = []
+            sources = []
+            
+            # Loop through all entries of column
             for i in api_range:
                 
                 if column == 'instruments':
                     try:
-                        instrument = len(api_list[i]['instruments'])
+                        instruments = range(len(api_list[i]['instruments']))
                         
-                        if instrument ==1:
-                            column_list.append(api_list[i]['instruments'][0]['displayName'])
-                            continue
-                        elif instrument ==0:
-                            column_list.append('N/A')
-                            continue
-                        else:
-                            # Add Loop to Concatenate Later
-                            column_list.append('Multiple')
-                            continue
+                        instrument_list = []
+                        
+                        for x in instruments:
+                            instrument_list.append(api_list[i]['instruments'][x]['displayName'])
+                       
+                        col = '/'.join(instrument_list)
+                        column_list.append(col)
+                        continue
+
                     except:
                         continue
                 
                 if column == 'linkedEvents':
                     try:
                         event = api_list[i]['linkedEvents']
-
-                        if event == 'None':
-                            column_list.append('N/A')
-                            continue
-                        elif event is list:
-                            # Add Loop to Concatenate Later
-                            column_list.append('Multiple')
+                    
+                        if event is None:
+                            col = 'N/A'
+                            column_list.append(col)
                             continue
                         else:
-                            column_list.append(api_list[i]['linkedEvents'])
+                            events = range(len(event))
+                            event_list = []
+                            
+                            for x in events:
+                                event_list.append(api_list[i]['linkedEvents'][x]['activityID'])
+                            col = '/'.join(event_list)
+                            column_list.append(col)
                             continue
+                    except:
+                        continue
+                
+                if column =="allKpIndex" and api == 'GST':
+                    try:
+                        KpIndex_list = []
+                        Source_list = []
+                        
+                        KpIndexes = range(len(api_list[i]['allKpIndex']))
+                        
+                        for x in KpIndexes:
+                            KpIndex_list.append(int(api_list[i]['allKpIndex'][x]['kpIndex']))
+                            Source_list.append(api_list[i]['allKpIndex'][x]['source'])
+                        
+                        print(f'got here {i}')
+                        # Build kpAvg Field
+                        if len(KpIndex_list) >= 1:
+                            kpAvg = sum(KpIndex_list)/len(KpIndex_list)
+                            KpAvg_list.append(kpAvg)
+                        else:
+                            KpAvg_list.append('N/A')
+                        
+                        # Build Source Field
+                        Source_list = list(dict.fromkeys(Source_list))
+                        
+                        if len(Source_list) == 0:
+                            source = 'N/A'
+                            
+                        if len(Source_list) == 1:
+                            source = Source_list[0]
+
+                        else:
+                            source = '/'.join(Source_list)
+                        
+                        sources.append(source)
+                        continue
+                    
                     except:
                         continue
 
@@ -152,15 +196,21 @@ def nasa_dfs(responseDict):
                         continue
                     except:
                         continue
-            
-            if len(column_list) > 0:
+                    
+            if column =="allKpIndex" and api == 'GST':
+                print(len(KpAvg_list))
+                print(len(sources))
+                if KpAvg_list and len(KpAvg_list) > 0:
+                    columnDict['KpAvg'] = KpAvg_list
+                if sources and len(sources) > 0:
+                    columnDict['source'] = sources
+                else:
+                    continue
+                
+            elif len(column_list) > 0:
                 columnDict[f'{column}'] = column_list
             else:
                 continue
-        
-        # Add Dictionary of Columns to df Dictionary
-            
-        # If Column == instruments cmeInputs or AllKpIndex Combine Dicts
             
         # Else
         df_Dicts[f'{api}'] = columnDict
@@ -198,3 +248,6 @@ api_key = 'oXd16S7iyStpHG1br0c1yTq9B5kFftCoqx9lfUoE'
 ParamsDict = params_dict(api_key)
 responseDict = get_api_data(ParamsDict)
 nasa_dfs(responseDict)
+
+#%%
+
