@@ -109,9 +109,17 @@ def nasa_dfs(responseDict):
         for column in columns:
             column_list = []   
             
-            # If allKpIndex is a field
-            KpAvg_list = []
-            sources = []
+            if column == 'allKpIndex':
+                KpAvg_list = []
+                sources = []
+            
+            if column == 'cmeInputs':
+                cmeInputsDict = {}
+                WSAcolumns = ['latitude','longitude',
+                                       'speed','halfAngle','isMostAccurate']
+                        
+                for x in WSAcolumns:
+                    cmeInputsDict[f'{x}'] = []
             
             # Loop through all entries of column
             for i in api_range:
@@ -137,7 +145,7 @@ def nasa_dfs(responseDict):
                         event = api_list[i]['linkedEvents']
                     
                         if event is None:
-                            col = 'N/A'
+                            col = 'None'
                             column_list.append(col)
                             continue
                         else:
@@ -163,7 +171,6 @@ def nasa_dfs(responseDict):
                             KpIndex_list.append(int(api_list[i]['allKpIndex'][x]['kpIndex']))
                             Source_list.append(api_list[i]['allKpIndex'][x]['source'])
                         
-                        print(f'got here {i}')
                         # Build kpAvg Field
                         if len(KpIndex_list) >= 1:
                             kpAvg = sum(KpIndex_list)/len(KpIndex_list)
@@ -185,9 +192,16 @@ def nasa_dfs(responseDict):
                         
                         sources.append(source)
                         continue
-                    
+                
                     except:
                         continue
+                    
+                if column == 'cmeInputs' and api == 'WSAEnlilSimulations':
+                    for x in WSAcolumns:
+                        try:
+                            cmeInputsDict[f'{x}'].append(api_list[i][f'{column}'][0][f'{x}'])
+                        except:
+                            cmeInputsDict[f'{x}'].append("N/A")
 
                 else:
                     try:
@@ -198,19 +212,44 @@ def nasa_dfs(responseDict):
                         continue
                     
             if column =="allKpIndex" and api == 'GST':
-                print(len(KpAvg_list))
-                print(len(sources))
                 if KpAvg_list and len(KpAvg_list) > 0:
                     columnDict['KpAvg'] = KpAvg_list
                 if sources and len(sources) > 0:
                     columnDict['source'] = sources
                 else:
                     continue
+            if column == 'cmeInputs' and api == 'WSAEnlilSimulations':
+                keys = list(cmeInputsDict.keys())
+                print(keys)
+                
+                for key in keys:
+                    columnDict[f'{key}'] = cmeInputsDict[f'{key}']
                 
             elif len(column_list) > 0:
                 columnDict[f'{column}'] = column_list
             else:
                 continue
+            
+            if column == 'impactList':
+                try:
+                    impacts = range(len(api_list[i]['impactList']))
+                    
+                    if impacts is None:
+                            col = 'None'
+                            column_list.append(col)
+                            continue
+                    else:
+                        impact_list = []
+                        
+                        for x in impacts:
+                            impact_list.append(api_list[i]['impactList'][x]['location'])
+                       
+                        col = '/'.join(impact_list)
+                        column_list.append(col)
+                        continue
+
+                except:
+                    continue
             
         # Else
         df_Dicts[f'{api}'] = columnDict
