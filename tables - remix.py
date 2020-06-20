@@ -205,7 +205,7 @@ def nasa_dfs(responseDict):
 
                 if column == 'impactList':
                     try:
-                        impact = api_list[i]['linkedEvents']
+                        impact = api_list[i]['impactList']
                     
                         if impact is None:
                             col = 'None'
