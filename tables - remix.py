@@ -203,6 +203,26 @@ def nasa_dfs(responseDict):
                         except:
                             cmeInputsDict[f'{x}'].append("N/A")
 
+                if column == 'impactList':
+                    try:
+                        impact = api_list[i]['linkedEvents']
+                    
+                        if impact is None:
+                            col = 'None'
+                            column_list.append(col)
+                            continue
+                        else:
+                            impacts = range(len(impact))
+                            impact_list = []
+                            
+                            for x in impacts:
+                                impact_list.append(api_list[i]['impactList'][x]['location'])
+                            col = '/'.join(impact_list)
+                            column_list.append(col)
+                            continue
+                    except:
+                        continue                    
+                
                 else:
                     try:
                         col = api_list[i][f'{column}']
@@ -211,6 +231,7 @@ def nasa_dfs(responseDict):
                     except:
                         continue
                     
+            # Putting Together Columns or Dictionaries      
             if column =="allKpIndex" and api == 'GST':
                 if KpAvg_list and len(KpAvg_list) > 0:
                     columnDict['KpAvg'] = KpAvg_list
@@ -218,6 +239,7 @@ def nasa_dfs(responseDict):
                     columnDict['source'] = sources
                 else:
                     continue
+                
             if column == 'cmeInputs' and api == 'WSAEnlilSimulations':
                 keys = list(cmeInputsDict.keys())
                 
@@ -228,29 +250,7 @@ def nasa_dfs(responseDict):
                 columnDict[f'{column}'] = column_list
             else:
                 continue
-            
-            if column == 'impactList':
-                try:
-                    impacts = range(len(api_list[i]['impactList']))
-                    
-                    if impacts is None:
-                            col = 'None'
-                            column_list.append(col)
-                            continue
-                    else:
-                        impact_list = []
-                        
-                        for x in impacts:
-                            impact_list.append(api_list[i]['impactList'][x]['location'])
-                       
-                        col = '/'.join(impact_list)
-                        print(col)
-                        column_list.append(col)
-                        continue
 
-                except:
-                    continue
-            
         # Else
         df_Dicts[f'{api}'] = columnDict
 
@@ -258,7 +258,7 @@ def nasa_dfs(responseDict):
         df = pd.DataFrame(df_Dicts[f'{api}'])
         
         # Export to S3
-        #s3_export(df, api)  
+        s3_export(df, api)  
 
 #%%
     
