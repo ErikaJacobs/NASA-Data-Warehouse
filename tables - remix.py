@@ -220,7 +220,6 @@ def nasa_dfs(responseDict):
                     continue
             if column == 'cmeInputs' and api == 'WSAEnlilSimulations':
                 keys = list(cmeInputsDict.keys())
-                print(keys)
                 
                 for key in keys:
                     columnDict[f'{key}'] = cmeInputsDict[f'{key}']
@@ -245,6 +244,7 @@ def nasa_dfs(responseDict):
                             impact_list.append(api_list[i]['impactList'][x]['location'])
                        
                         col = '/'.join(impact_list)
+                        print(col)
                         column_list.append(col)
                         continue
 
@@ -258,7 +258,7 @@ def nasa_dfs(responseDict):
         df = pd.DataFrame(df_Dicts[f'{api}'])
         
         # Export to S3
-        s3_export(df, api)  
+        #s3_export(df, api)  
 
 #%%
     
