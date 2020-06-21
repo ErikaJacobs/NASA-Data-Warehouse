@@ -67,7 +67,7 @@ def get_api_data(ParamsDict):
       except:
           print(f"{API} was not successfully requested.")
           response = 'N/A'
-      
+          
       responseDict[API] = response
     
     for API in api_list:
@@ -92,8 +92,6 @@ def nasa_dfs(responseDict):
         # Set-Up
         api_list = responseDict[f'{api}']
         columnDict = {}
-        df_Dicts = {}
-        df_Dicts[f'{api}'] = columnDict
 
         # Extract Data from Dictionary
         api_range = list(range(len(api_list)))
@@ -133,7 +131,7 @@ def nasa_dfs(responseDict):
                         for x in instruments:
                             instrument_list.append(api_list[i]['instruments'][x]['displayName'])
                        
-                        col = '/'.join(instrument_list)
+                        col = '_'.join(instrument_list)
                         column_list.append(col)
                         continue
 
@@ -154,7 +152,7 @@ def nasa_dfs(responseDict):
                             
                             for x in events:
                                 event_list.append(api_list[i]['linkedEvents'][x]['activityID'])
-                            col = '/'.join(event_list)
+                            col = '_'.join(event_list)
                             column_list.append(col)
                             continue
                     except:
@@ -188,7 +186,7 @@ def nasa_dfs(responseDict):
                             source = Source_list[0]
 
                         else:
-                            source = '/'.join(Source_list)
+                            source = '_'.join(Source_list)
                         
                         sources.append(source)
                         continue
@@ -217,7 +215,7 @@ def nasa_dfs(responseDict):
                             
                             for x in impacts:
                                 impact_list.append(api_list[i]['impactList'][x]['location'])
-                            col = '/'.join(impact_list)
+                            col = '_'.join(impact_list)
                             column_list.append(col)
                             continue
                     except:
@@ -257,6 +255,9 @@ def nasa_dfs(responseDict):
         # Create Dataframe
         df = pd.DataFrame(df_Dicts[f'{api}'])
         
+        for item in df.columns:
+            df[item] = df[item].apply(lambda x: x.replace('~', '-'))
+        
         # Export to S3
         s3_export(df, api)  
         
@@ -275,7 +276,7 @@ def s3_export(df, name):
         
     s3 = boto3.resource('s3')
     csv_buffer = StringIO()
-    df.to_csv(csv_buffer, index = False)
+    df.to_csv(csv_buffer, index = False, sep="~")
     s3.Object('erikatestbucket', path).put(Body=csv_buffer.getvalue())
     
 #%%
