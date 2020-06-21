@@ -17,4 +17,7 @@ def execute_queries(conn, queries):
                 print(e)
                 break
 
+    cur.close()
+    conn.close()
+
 #%%

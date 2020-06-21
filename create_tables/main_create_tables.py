@@ -2,7 +2,7 @@
 
 # S3 TABLE CREATION - MAIN FILE
  
-def main_create_tables():
+def run():
     
     # Inputs
     
