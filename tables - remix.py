@@ -256,7 +256,8 @@ def nasa_dfs(responseDict):
         df = pd.DataFrame(df_Dicts[f'{api}'])
         
         for item in df.columns:
-            df[item] = df[item].apply(lambda x: x.replace('~', '-'))
+            df[item] = df[item].apply(lambda x: str(x).replace('~', '-'))
+            df[item] = df[item].fillna('N/A')
         
         # Export to S3
         s3_export(df, api)  

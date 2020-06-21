@@ -39,7 +39,7 @@ def table_configs(df_Dicts):
         'longitude': 'text', 
         'modelCompletionTime': 'text',
         'mpcID': 'text', 
-        'note': 'text', 
+        'note': 'varchar(700)', 
         'peakTime': 'text', 
         'rbeID': 'text', 
         'rmin_re': 'text', 
@@ -82,7 +82,6 @@ def redshift_queries(configs, table_configs):
     
 api_list = ['CME','CMEAnalysis','HSS','WSAEnlilSimulations', 
     'GST', 'IPS', 'SEP', 'MPC', 'RBE','FLR']
-api_list = ['MPC', 'IPS']
 
 drop_queries = []
 create_queries = []
@@ -94,11 +93,11 @@ for api in api_list:
     create_query = '''CREATE TABLE "{}" ({});'''.format(api, table_configs[api])
     
     copy_query = """copy {}
-    from 's3://erikatestbucket/NASA'
+    from 's3://erikatestbucket/NASA/{}.csv'
     credentials 'aws_iam_role={}'
     CSV
     delimiter '~' 
-    IGNOREHEADER 1;""".format(api, configs['role_arn'])
+    IGNOREHEADER 1;""".format(api, api, configs['role_arn'])
     
     print('DROP QUERY')
     print(drop_query)
