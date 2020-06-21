@@ -1,86 +1,10 @@
-# NASA Redshift - Data Warehouse Project
-
-#%%
-def params_dict(api_key):
-    
-    # Import Packages - Set Dates
-    import datetime
-    from dateutil.relativedelta import relativedelta
-    
-    ParamsDict=dict()
-    now = str(datetime.datetime.now().date())
-    then = str(datetime.datetime.now().date() - relativedelta(years=5))
-    
-    # application/json;charset=UTF-8
-    paramsjson = {
-          'api_key':api_key,
-          'startDate':then,
-          'endDate':now
-          }
-    
-    # text/plain; charset=UTF-8
-    paramstext = {
-          'api_key':api_key,
-          'startDate':then,
-          'endDate':now,
-          'feedtype':'json'
-          }
-    
-    # Append to Dict
-    
-    textlist = ['GST', 'IPS', 'SEP', 'MPC', 'RBE', 'FLR']
-    jsonlist = ['CME', 'CMEAnalysis', 'HSS', 'WSAEnlilSimulations']
-    
-    for item in textlist:
-        ParamsDict[item]=paramstext
-    
-    for item in jsonlist:
-        ParamsDict[item]=paramsjson
-    
-    return ParamsDict
-
-#%%
-
-#DONKI REQUESTS
-    
-def get_api_data(ParamsDict):
-    import requests
-    
-    responseDict = {}
-    
-    api_list = ['CME','CMEAnalysis','HSS','WSAEnlilSimulations', 
-    'GST', 'IPS', 'SEP', 'MPC', 'RBE','FLR']
-    
-    def donki_json(API, ParamsDict):
-      url = f"https://api.nasa.gov/DONKI/{API}"
-      params = ParamsDict[API]
-      r = requests.get(url,params=params)
-      r.encoding = 'utf-8'
-      #print(r.status_code)
-      #print(r.headers.get('Content-Type'))
-      #print(r.encoding)
-      #print(limit_remaining)
-      
-      try:
-          response = r.json()
-    
-      except:
-          print(f"{API} was not successfully requested.")
-          response = 'N/A'
-          
-      responseDict[API] = response
-    
-    for API in api_list:
-        donki_json(API, ParamsDict)
-    
-    return responseDict
-
 #%%
 
 # One Combined User-Defined Function to create ALL tables
 
 def nasa_dfs(responseDict):
     import pandas as pd
+    from create_tables import s3_export
 
     nasa_api = ['CME','CMEAnalysis','HSS','WSAEnlilSimulations', 
     'GST', 'IPS', 'SEP', 'MPC', 'RBE','FLR']
@@ -264,37 +188,8 @@ def nasa_dfs(responseDict):
             df['note'] = df['note'].apply(lambda x: str(x)[0:499])
         
         # Export to S3
-        s3_export(df, api)  
+        s3_export.s3_export(df, api)  
         
     return df_Dicts
 
 #%%
-    
-## Boto3
-
-def s3_export(df, name):
-
-    import boto3
-    from io import StringIO
-
-    path = f'NASA/{name}.csv'
-        
-    s3 = boto3.resource('s3')
-    csv_buffer = StringIO()
-    df.to_csv(csv_buffer, index = False, sep="~")
-    s3.Object('erikatestbucket', path).put(Body=csv_buffer.getvalue())
-    
-#%%
-    
-# Inputs
-
-api_key = 'oXd16S7iyStpHG1br0c1yTq9B5kFftCoqx9lfUoE'
-
-# Procedure
-
-ParamsDict = params_dict(api_key)
-responseDict = get_api_data(ParamsDict)
-df_Dicts = nasa_dfs(responseDict)
-
-#%%
-
