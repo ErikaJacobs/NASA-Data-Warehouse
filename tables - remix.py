@@ -259,6 +259,8 @@ def nasa_dfs(responseDict):
         
         # Export to S3
         s3_export(df, api)  
+        
+    return df_Dicts
 
 #%%
     
@@ -286,7 +288,7 @@ api_key = 'oXd16S7iyStpHG1br0c1yTq9B5kFftCoqx9lfUoE'
 
 ParamsDict = params_dict(api_key)
 responseDict = get_api_data(ParamsDict)
-nasa_dfs(responseDict)
+df_Dicts = nasa_dfs(responseDict)
 
 #%%
 

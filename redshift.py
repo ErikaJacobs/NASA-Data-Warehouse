@@ -119,7 +119,6 @@ def endpoint(configs):
         try:
             endpoint = 'N/A'
             response = dict(redshift.describe_clusters(ClusterIdentifier = configs['clusteridentifier']))
-            print(response)
         except:
             print('ERROR: Redshift cluster does not exist')
             break
@@ -180,17 +179,22 @@ def open_port(configs):
 
 # Connect To Redshift
 
-import psycopg2
+def redshift_connection(configs):
 
-try:
-    conn = psycopg2.connect(
-        dbname = configs['dbname'],
-        host = configs['endpoint'],
-        port = configs['port'],
-        user = configs['masterusername'],
-        password = configs['masteruserpassword'])
-except:
-    print('THIS DID NOT WORK')
+    import psycopg2
+    
+    try:
+        conn = psycopg2.connect(
+            dbname = configs['dbname'],
+            host = configs['endpoint'],
+            port = configs['port'],
+            user = configs['masterusername'],
+            password = configs['masteruserpassword'])
+        print('Success! Redshift connected.')
+    except:
+        print('ERROR: Connection not successful')
+        
+    return conn
 
 #%%
 
@@ -201,6 +205,7 @@ configs = iam(configs)
 create_cluster(configs)
 configs = endpoint(configs)
 configs = open_port(configs)
+conn = redshift_connection(configs)
 
 #%%
 # Delete Cluster
@@ -211,13 +216,21 @@ def delete(configs):
     redshift = redshift_boto()
 
     # Delete Cluster and IAM Role 
-    redshift.delete_cluster(ClusterIdentifier=configs['clusteridentifier'], 
+    try:
+        redshift.delete_cluster(ClusterIdentifier=configs['clusteridentifier'], 
                             SkipFinalClusterSnapshot = True)
-    
-    iam.detach_role_policy(
-        RoleName = configs['rolename'], 
-        PolicyArn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
-    iam.delete_role(RoleName=configs['rolename'])
+        print('Redshift cluster deleted!')
+    except:
+        print('ERROR: redshift.delete_cluster did not process')
+        
+    try:
+        iam.detach_role_policy(
+            RoleName = configs['rolename'], 
+            PolicyArn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
+        iam.delete_role(RoleName=configs['rolename'])
+        print('IAM role deleted!')
+    except:
+        print('ERROR: iam.delete_role did not process')
 
 delete(configs)
     
