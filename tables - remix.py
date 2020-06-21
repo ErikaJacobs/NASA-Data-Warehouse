@@ -255,9 +255,13 @@ def nasa_dfs(responseDict):
         # Create Dataframe
         df = pd.DataFrame(df_Dicts[f'{api}'])
         
+        # Final Touches to df
         for item in df.columns:
             df[item] = df[item].apply(lambda x: str(x).replace('~', '-'))
             df[item] = df[item].fillna('N/A')
+        
+        if 'note' in df.columns:
+            df['note'] = df['note'].apply(lambda x: str(x)[0:499])
         
         # Export to S3
         s3_export(df, api)  
