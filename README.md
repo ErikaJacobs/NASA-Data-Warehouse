@@ -21,9 +21,6 @@ Pulls data from NASA DONKI API, and stages data in S3 to load to Redshift using 
 * [```run.py```](https://github.com/ErikaJacobs/NASA-Redshift/blob/master/run.py)
 
 # Other Repository Contents
-* 
-
-# Sources
 * create_tables
      * [```get_api_data.py```]() - Pulls DONKI data from NASA API in json format
      * [```nasa_dfs.py```]() - Creates structured dataframes from the NASA data, and exports to S3
@@ -46,3 +43,5 @@ Pulls data from NASA DONKI API, and stages data in S3 to load to Redshift using 
 * undo
      * [```delete.py```]() - Deletes both the Redshift cluster and IAM rule created to access it
 * config.ini - Redshift configurations
+
+# Sources
