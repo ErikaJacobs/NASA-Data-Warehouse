@@ -41,7 +41,10 @@ Pulls data from NASA DONKI API, and stages data in S3 to load to Redshift using 
      * [```redshift_boto.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/redshift_cluster/redshift_boto.py) - Creates AWS CLI access to perform operations in Redshift   
      * [```redshift_connection.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/redshift_cluster/redshift_connection.py) - Creates SQL connection to Redshift database
 * undo
-     * [```delete.py```]() - Deletes both the Redshift cluster and IAM rule created to access it
-* config.ini - Redshift configurations
+     * [```delete.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/undo/delete.py) - Deletes both the Redshift cluster and IAM rule created to access it
+* [```config.ini```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/config.ini) - Redshift configurations
 
 # Sources
+* [Boto3 - AWS Redshift](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/redshift.html)
+* [Boto3 - IAM](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/iam.html)
+* [Requests: HTTP for Humans](https://requests.readthedocs.io/en/master/)
