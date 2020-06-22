@@ -2,12 +2,18 @@
 
 # Delete Cluster
 
-def delete(configs):
+def delete():
+
     import boto3
-    from redshift_cluster import redshift_boto
+    from redshift_cluster import redshift_boto as d1
+    from redshift_cluster import config as d2
 
     iam = boto3.client('iam')
-    redshift = redshift_boto()
+    redshift = d1.redshift_boto()
+
+    # Bringing in Configs
+    
+    configs = d2.config()
 
     # Delete Cluster and IAM Role 
     try:
@@ -26,6 +32,6 @@ def delete(configs):
     except:
         print('ERROR: iam.delete_role did not process')
 
-delete(configs)
+delete()
     
 #%%
