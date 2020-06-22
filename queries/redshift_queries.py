@@ -23,13 +23,6 @@ def redshift_queries(configs, table_configs):
         delimiter '~' 
         IGNOREHEADER 1;""".format(api, api, configs['role_arn'])
         
-        print('DROP QUERY')
-        print(drop_query)
-        print('CREATE QUERY')
-        print(create_query)
-        print('COPY QUERY')
-        print(copy_query)
-        
         drop_queries.append(drop_query)
         create_queries.append(create_query)
         copy_queries.append(copy_query)

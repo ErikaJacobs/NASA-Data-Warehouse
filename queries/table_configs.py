@@ -69,8 +69,6 @@ def table_configs(df_Dicts):
             statement_details.append(string)
             
         statement = ', '.join(statement_details)
-        print('HERE IS A STATEMENT BELOW')
-        print(statement)
         
         table_configs[api] =  statement
     
