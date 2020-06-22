@@ -26,7 +26,7 @@ This project takes the data from NASA's API, cleans aspects of the data, and con
 * create_tables
      * [```get_api_data.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/create_tables/get_api_data.py) - Pulls DONKI data from NASA API in json format
      * [```nasa_dfs.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/create_tables/nasa_dfs.py) - Creates structured dataframes from the NASA data, and exports to S3
-     * [```params_dict.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/create_tables/params_dict.py) - Creates individualized parameters for pulling each individual type of NASA DONKI data
+     * [```params_dict.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/create_tables/params_dict.py) - Creates individualized parameters for pulling each individual type of NASA DONKI data from the api
      * [```s3_export.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/create_tables/s3_export.py) - Code used for exporting a dataframe to S3
 * main
      * [```main.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/main/main.py) - Organizes execution of all modules
