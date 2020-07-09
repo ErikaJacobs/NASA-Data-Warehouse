@@ -3,6 +3,13 @@
 # Delete Cluster
 
 def delete():
+    
+    # Set Working Directory
+    
+    file =  'C:/Users/cluel/Documents/GitHub/NASA-Redshift'
+    
+    import os
+    os.chdir(file)
 
     import boto3
     from redshift_cluster import redshift_boto as d1
