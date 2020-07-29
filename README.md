@@ -1,5 +1,5 @@
 # Redshift Data Warehouse of NASA Weather Data
-According NASA, the Space Weather Database Of Notifications, Knowledge, Information (DONKI) is "a comprehensive on-line tool for space weather forecasters, scientists, and the general space science community." DONKI provides data on space weather events updated daily, which can be accessed through an API feed through NASA's website in json format.
+According to NASA, the Space Weather Database Of Notifications, Knowledge, Information (DONKI) is "a comprehensive on-line tool for space weather forecasters, scientists, and the general space science community." DONKI provides data on space weather events updated daily, which can be accessed through an API feed through NASA's website in json format.
 
 This project takes the data from NASA's API, cleans aspects of the data, and converts the data into a set of structured datasets to be readily used for analysis. The datasets are then exported as CSV files in AWS S3 for staging, and are used to create a data warehouse through AWS Redshift for ease of online analytical processes. This process is handled by using boto3.
 
