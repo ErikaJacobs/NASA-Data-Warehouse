@@ -19,7 +19,7 @@ This project takes the data from NASA's API, cleans aspects of the data, and con
 * Pandas
 * Boto3
 
-# Featured Notebooks, Scripts, Analysis, or Deliverables
+# Featured Scripts or Deliverables
 * [```run.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/run.py)
 
 # Other Repository Contents
