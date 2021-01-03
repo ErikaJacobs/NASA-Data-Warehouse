@@ -56,9 +56,9 @@ Please note that Redshift incurs an hourly charge depending on the node type and
      * [```execute_queries.py```](modules/execute_queries.py) - Creates and executes queries to drop, create, and insert into Redshift tables
      * [```main.py```](modules/main.py) - Organizes execution of all modules
      * [```redshift_connection.py```](modules/redshift_connection.py) - Creates Redshift cluster and security role for NASA data
-* [config.ini](config.ini) - Configurations for Redshift
-* [delete.py](delete.py) - Deletes Redshift cluster and security role created from this repository
-* [requirements.txt](requirements.txt) - Python package requirements
+* [```config.ini```](config.ini) - Configurations for Redshift
+* [```delete.py```](delete.py) - Deletes Redshift cluster and security role created from this repository
+* [```requirements.txt```](requirements.txt) - Python package requirements
 
 # Sources
 * [Boto3 - AWS Redshift](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/redshift.html)
