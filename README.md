@@ -41,7 +41,7 @@ Run the following code on the command line to run this project:
 Python run.py
 ```
 
-To remove the Redshift cluster an environment, run the following code:
+To remove the Redshift cluster and environment, run the following code:
 ```
 Python delete.py
 ```
