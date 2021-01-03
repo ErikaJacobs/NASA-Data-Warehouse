@@ -19,6 +19,34 @@ This project takes the data from NASA's API, cleans aspects of the data, and con
 * Pandas
 * Boto3
 
+## How To Run
+
+##### *Adjust Configurations*
+Configurations in the config.ini file, for the most part, would be optional changes regarding naming preferences . The config.ini file may need to be adjusted for node type, number of nodes, or AWS region depending on need. Redshift’s default port is 5439 (which is the current configuration), but could potentially need adjustment depending on the AWS environment and this project were being run on.
+##### *Obtain NASA API Token*
+In order to pull data from NASA’s API for DONKI, an API token will need to be obtained directly from NASA. [Click here](https://api.nasa.gov/) to obtain a NASA API key.
+##### *Set Environment Variables*
+For this project to process, the NASA API access key will need to be set as an environment variable called "spotify_id". This environment variable will need to be set on the operating system this project is to be run on.
+
+##### *Install Requirements and Run*
+On the command line of your operating system, navigate to the repository directory (ideally using a Python virtual environment).
+
+Run the following code on the command line to install requirements:
+```
+pip install -r requirements.txt 
+```
+
+Run the following code on the command line to run this project:
+```
+Python run.py
+```
+
+To remove the Redshift cluster an environment, run the following code:
+```
+Python delete.py
+```
+Please note that Redshift incurs an hourly charge depending on the node type and amount. Please [click here](https://aws.amazon.com/redshift/pricing/) to learn more about Redshift’s pricing structure.
+
 # Featured Scripts or Deliverables
 * [```run.py```](https://github.com/ErikaJacobs/NASA-Data-Warehouse/blob/master/run.py)
 
