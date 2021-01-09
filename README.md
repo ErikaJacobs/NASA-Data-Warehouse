@@ -21,6 +21,8 @@ This project takes the data from NASA's API, cleans aspects of the data, and con
 
 ## How To Run
 
+##### *AWS Credentials*
+AWS Credentials will need to be saved locally in the .aws directory of an operating system in order for this project to successfully run. [Click here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) to learn more about this process.
 ##### *Adjust Configurations*
 Configurations in the config.ini file, for the most part, would be optional changes regarding naming preferences. The config.ini file may need to be adjusted for node type, number of nodes, or AWS region depending on user need. Redshift’s default port is 5439 (which is the current configuration), but could potentially need adjustment depending on the AWS environment and this project were being run on.
 ##### *Obtain NASA API Token*
