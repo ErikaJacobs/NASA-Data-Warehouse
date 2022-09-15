@@ -28,7 +28,7 @@ Configurations in the config.ini file, for the most part, would be optional chan
 ##### *Obtain NASA API Token*
 In order to pull data from NASA’s API for DONKI, an API token will need to be obtained directly from NASA. [Click here](https://api.nasa.gov/) to obtain a NASA API key.
 ##### *Set Environment Variables*
-For this project to process, the NASA API access key will need to be set as an environment variable called "spotify_id". This environment variable will need to be set on the operating system this project is to be run on.
+For this project to process, the NASA API access key will need to be set as an environment variable called "nasa_key". This environment variable will need to be set on the operating system this project is to be run on.
 ##### *Install Requirements and Run*
 On the command line of your operating system, navigate to the repository directory (ideally using a Python virtual environment).
 
